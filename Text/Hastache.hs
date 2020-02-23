@@ -122,13 +122,15 @@ type MuContext m =
     Text            -- ^ Variable name
     -> m (MuType m) -- ^ Value
 
-instance (Monad m) => Monoid (MuContext m) where
-    mempty = const $ return MuNothing
-    a `mappend` b = \v -> do
+instance (Monad m) => Semigroup (MuContext m) where
+    a <> b = \v -> do
         x <- a v
         case x of
             MuNothing -> b v
             _ -> return x
+
+instance (Monad m) => Monoid (MuContext m) where
+    mempty = const $ return MuNothing
 
 -- | Left-leaning composition of contexts. Given contexts @c1@ and
 -- @c2@, the behaviour of @(c1 <> c2) x@ is following: if @c1 x@
